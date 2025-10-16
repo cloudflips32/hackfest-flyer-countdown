@@ -153,10 +153,10 @@ export default function App() {
             <div>
               <div className="text-white mb-1">Email</div>
               <a
-                href="mailto:Crystal.Wernicke@fsw.edu"
+                href="mailto:rushell.hopkins@fsw.edu"
                 className="text-cyan-400 hover:underline"
               >
-                Crystal.Wernicke@fsw.edu
+                rushell.hopkins@fsw.edu
               </a>
             </div>
             <div>
