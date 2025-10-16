@@ -1,103 +1,190 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import flyerImage from '@/public/fsw-hackfest-flyer.png';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Mail, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+import Image from 'next/image';
+
+export default function App() {
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const eventDate = new Date('2025-10-19T10:30:00').getTime();
+
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+
+      if (distance > 0) {
+        setTimeRemaining({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        });
+      } else {
+        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Cyber Club Hackfest',
+      text: 'Join us for Cyber Club Hackfest on October 19, 2025! Think Like An Adversary, Rise Like A Defender.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast.success('Shared successfully!');
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (Error: any) {
+      if (Error.name !== 'AbortError') {
+        console.error('Error sharing:', Error);
+      }
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Flyer Display */}
+          <div className="bg-slate-900/50 rounded-lg p-4 shadow-2xl backdrop-blur-sm border border-cyan-400/20">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src={flyerImage}
+              alt="Cyber Club Hackfest - October 19, 2025"
+              className="w-full h-auto rounded-lg"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className="mt-4 bg-gradient-to-r from-cyan-950/50 via-purple-950/50 to-cyan-950/50 rounded-lg p-6 shadow-2xl backdrop-blur-sm border border-cyan-400/30">
+            <div className="text-center mb-4">
+              <h2 className="text-cyan-400">Event Starts In</h2>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="bg-slate-900/70 rounded-lg p-4 border border-purple-500/30">
+                  <div className="text-cyan-400 mb-1 flex flex-1 justify-center">Days</div>
+                  <div className="text-white">{timeRemaining.days}</div>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="bg-slate-900/70 rounded-lg p-4 border border-purple-500/30">
+                  <div className="text-cyan-400 mb-1 flex flex-1 justify-center">Hours</div>
+                  <div className="text-white">{timeRemaining.hours}</div>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="bg-slate-900/70 rounded-lg p-4 border border-purple-500/30">
+                  <div className="text-cyan-400 mb-1 flex flex-1 justify-center">Minutes</div>
+                  <div className="text-white">{timeRemaining.minutes}</div>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="bg-slate-900/70 rounded-lg p-4 border border-purple-500/30">
+                  <div className="text-cyan-400 mb-1 flex flex-1 justify-center">Seconds</div>
+                  <div className="text-white">{timeRemaining.seconds}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <Button
+              onClick={() => setContactDialogOpen(true)}
+              variant="outline"
+              className="w-full border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 h-14"
+            >
+              <Mail className="mr-2 h-5 w-5" />
+              Contact Us
+            </Button>
+            <Button
+              onClick={handleShare}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white h-14"
+            >
+              <Share2 className="mr-2 h-5 w-5" />
+              Share
+            </Button>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      {/* Contact Dialog */}
+      <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
+        <DialogContent className="bg-slate-900 border-cyan-400/30">
+          <DialogHeader>
+            <DialogTitle className="text-cyan-400">Contact Us</DialogTitle>
+            <DialogDescription className="text-slate-300">
+              Get in touch with the Cyber Club!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div>
+              <div className="text-white mb-1">Email</div>
+              <a
+                href="mailto:Crystal.Wernicke@fsw.edu"
+                className="text-cyan-400 hover:underline"
+              >
+                Crystal.Wernicke@fsw.edu
+              </a>
+            </div>
+            <div>
+              <div className="text-white mb-1">Register Here!</div>
+              <a
+                href="https://fsw.presence.io/event/2nd-annual-hackfest-2025"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                https://fsw.presence.io/event/2nd-annual-hackfest-2025
+              </a>
+            </div>
+            <div>
+              <div className="text-white mb-1">Address</div>
+              <a className='hover:underline hover:text-cyan-400' href="https://www.google.com/maps/place/Florida+SouthWestern+State+College/@26.6067576,-81.8655264,15z/data=!4m6!3m5!1s0x88d9068068552849:0x73c8050664368457!8m2!3d26.6067576!4d-81.8655264!16s%2Fg%2F11c488kgzn?entry=ttu&g_ep=EgoyMDI1MTAxNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">
+                <p className="text-slate-300">
+                  Florida SouthWestern State College<br />
+                  Lee Campus, Building K<br />
+                  8099 College Parkway<br />
+                  Fort Myers, FL 33919
+                </p>
+              </a>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
