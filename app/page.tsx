@@ -78,7 +78,7 @@ export default function App() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Flyer Display */}
-          <div className="bg-slate-900/50 rounded-lg p-4 shadow-2xl backdrop-blur-sm border border-cyan-400/20">
+          <div className="rounded-lg p-4">
             <Image
               src={flyerImage}
               alt="Cyber Club Hackfest - October 19, 2025"
